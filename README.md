@@ -1,18 +1,45 @@
 # SeatSystem
 
-Lightweight seat/booking management app with a Node/TypeScript backend and a Nuxt 3 frontend.
+SeatSystem is a full-stack seat booking solution built with a Nuxt 3 (Vue 3) frontend and a Node.js + TypeScript backend.  
+The project demonstrates a clean frontend–backend separation and provides basic seat browsing and booking functionality.
 
-Project structure
+---
 
-- `backend/` — Express + Sequelize + TypeScript API
-- `frontend/` — Nuxt 3 (Vue 3) UI
+## ✨ Features
 
-Prerequisites
+- Floor plan edit
+- Seat layout browsing
+- Seat selection and booking
+- RESTful API backend
+- Frontend and backend separation
+- Scalable project structure for future expansion
+
+---
+
+## 🧠 Tech Stack
+
+### Frontend
+- Nuxt 3 (Vue 3 + Vite)
+- TypeScript
+- Pinia (State Management)
+- Tailwind CSS
+- Axios
+
+### Backend
+- Node.js
+- Express
+- TypeScript
+- Sequelize ORM
+- PostgreSQL (or other SQL databases)
+
+---
+
+## Prerequisites
 
 - Node.js >= 18 and npm
 - PostgreSQL (for backend DB)
 
-Quick start
+## Quick start
 
 1. Install backend deps and start (dev):
 
@@ -27,9 +54,9 @@ cd frontend
 npm install
 npm run dev
 
-Linting & formatting
+## Linting & formatting
 
-- Backend and frontend include ESLint + Prettier configs. To run:
+### Backend and frontend include ESLint + Prettier configs. To run:
 
 cd backend
 npm run lint
@@ -41,7 +68,7 @@ npm run lint
 npm run lint:fix
 npm run format
 
-Useful notes
+## Useful notes
 
 - Backend migrations: `npx sequelize-cli db:migrate` (runs from `backend/`).
 - Backend uploads are stored in `backend/public/uploads/floorplans/`.
