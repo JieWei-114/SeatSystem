@@ -1,12 +1,12 @@
-Backend README
+# Backend 
 
 This folder contains the Express + TypeScript API for SeatSystem.
 
-Prerequisites
+## Prerequisites
 - Node.js >= 18
 - PostgreSQL and a DB user
 
-Environment
+## Environment
 - Copy `.env.example` (if present) or create `.env` with the following keys:
 
 ```
@@ -21,26 +21,26 @@ DB_PORT=5432
 JWT_SECRET=your_jwt_secret
 ```
 
-Install & run (development)
+## Install & run (development)
 
 cd backend
 npm install
 npm run dev
 
 
-Database migrations & seeds
+## Database migrations & seeds
 
 cd backend
 npx sequelize-cli db:migrate
 npx sequelize-cli db:seed:all
 
-Linting & formatting
+## Linting & formatting
 
 cd backend
 npm run lint
 npm run lint:fix
 npm run format
 
-Notes
+## Notes
 - Uploaded floorplans are saved in `public/uploads/floorplans/`.
 - Server entry: `src/index.ts`.
