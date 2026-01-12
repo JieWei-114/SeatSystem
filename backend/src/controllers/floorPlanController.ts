@@ -17,6 +17,10 @@ interface SeatInput {
   x: number;
   y: number;
   angle: number;
+  scaleX?: number;
+  scaleY?: number;
+  width?: number;
+  height?: number;
 }
 
 // Add Floor Plan (Super Admin only)
@@ -55,7 +59,10 @@ export const addFloorPlan = async (req: Request, res: Response): Promise<void> =
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
-    fs.writeFileSync(path.join(__dirname, '../../public', imagePath), Buffer.from(image.split(',')[1], 'base64'));
+    fs.writeFileSync(
+      path.join(__dirname, '../../public', imagePath),
+      Buffer.from(image.split(',')[1], 'base64')
+    );
     const floorPlan = await createFloorPlan(floorId, imagePath, seats);
     const fullImageUrl = `${req.protocol}://${req.get('host')}/uploads/floorplans/${fileName}`;
     res.status(201).json({
@@ -73,7 +80,7 @@ export const addFloorPlan = async (req: Request, res: Response): Promise<void> =
 export const getFloorPlan = async (req: Request, res: Response): Promise<void> => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
-  const { floorId } = req.params;
+  const { floorId } = req.params as { floorId: string | string[] };
 
   if (!token) {
     res.status(401).json({ status: 'fail', message: 'No token provided' });
@@ -93,7 +100,8 @@ export const getFloorPlan = async (req: Request, res: Response): Promise<void> =
   }
 
   try {
-    const floorPlan = await getFloorPlanByFloorId(parseInt(floorId));
+    const floorIdStr = Array.isArray(floorId) ? floorId[0] : floorId;
+    const floorPlan = await getFloorPlanByFloorId(parseInt(floorIdStr, 10));
     if (!floorPlan) {
       res.status(404).json({ status: 'fail', message: 'Floor plan not found' });
       return;
@@ -111,7 +119,7 @@ export const getFloorPlan = async (req: Request, res: Response): Promise<void> =
 export const updateFloorPlans = async (req: Request, res: Response): Promise<void> => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
-  const { floorId } = req.params;
+  const { floorId } = req.params as { floorId: string | string[] };
   const { seats } = req.body; // No image required for update
 
   if (!token) {
@@ -143,8 +151,25 @@ export const updateFloorPlans = async (req: Request, res: Response): Promise<voi
   }
 
   try {
-    const floorPlan = await updateFloorPlan(Number(floorId), seats as SeatInput[]);
-    const fullImageUrl = `${req.protocol}://${req.get('host')}${floorPlan.imagePath}`;
+    const floorIdStr = Array.isArray(floorId) ? floorId[0] : floorId;
+    const normalizedSeats = (seats as any[]).map((s) => ({
+      seatNumber: s.seatNumber,
+      description: s.description,
+      available: s.available,
+      x: s.x,
+      y: s.y,
+      angle: s.angle,
+      scaleX: typeof s.scaleX === 'number' ? s.scaleX : 1,
+      scaleY: typeof s.scaleY === 'number' ? s.scaleY : 1,
+      width: s.width ?? null,
+      height: s.height ?? null,
+    }));
+
+    // Cast to any to avoid cross-module SeatInput type mismatch
+    const floorPlan = await updateFloorPlan(Number(floorIdStr), normalizedSeats as any);
+    const hostHeader = req.get('host');
+    const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader || req.hostname;
+    const fullImageUrl = `${req.protocol}://${host}${floorPlan.imagePath}`;
     res.status(200).json({
       status: 'success',
       message: 'Floor plan updated successfully',

@@ -72,3 +72,12 @@ npm run format
 
 - Backend migrations: `npx sequelize-cli db:migrate` (runs from `backend/`).
 - Backend uploads are stored in `backend/public/uploads/floorplans/`.
+
+## App screenshot
+
+![App screenshot](assets/screenshot1.png)
+![App screenshot](assets/screenshot2.png)
+![App screenshot](assets/screenshot3.png)
+
+
+

@@ -90,7 +90,7 @@ onMounted(() => {
   ) {
     router.push('/booking');
   } else {
-    fetchUsers(); // Load all users initially
+    fetchUsers();
   }
 });
 

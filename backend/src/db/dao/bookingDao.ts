@@ -48,7 +48,7 @@ export const deleteBookingById = async (bookingId: number, userId: number): Prom
     console.log('Deleting booking:', { bookingId, userId });
 
     const booking = await Booking.findOne({
-        where: { id: bookingId, userId }, // Ensure user owns the booking
+        where: { id: bookingId, userId },
         include: [{ model: Seat, as: 'seat' }],
     });
 

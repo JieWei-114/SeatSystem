@@ -182,23 +182,21 @@ export const searchUsers = async (req: Request, res: Response): Promise<void> =>
   
   try {
     if (query) {
-      // Find one user with exact or close match
       const user = await User.findOne({
         where: {
-          username: { [Op.iLike]: `${query}` }, // Exact match (case-insensitive)
+          username: { [Op.iLike]: `${query}` }, 
         },
         attributes: ['id', 'username', 'role'],
       });
       if (user) {
         res.status(200).json({
           status: 'success',
-          data: [user], // Return as array for consistency
+          data: [user],
         });
       } else {
         res.status(404).json({ status: 'fail', message: 'No user found with that name' });
       }
     } else {
-      // Return all users if no query
       const users = await User.findAll({
         attributes: ['id', 'username', 'role'],
       });
@@ -301,7 +299,6 @@ export const deleteUserByAdmin = async (req: Request, res: Response): Promise<vo
       return;
     }
 
-    // Super admin can delete anyone; manager can only delete normal users
     if (decodedUser.role === 'facility_manager' && targetUser.role !== 'normal_user') {
       res.status(403).json({ status: 'fail', message: 'Managers can only delete normal users' });
       return;

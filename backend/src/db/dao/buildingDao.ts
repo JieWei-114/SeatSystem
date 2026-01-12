@@ -57,12 +57,11 @@ export const deleteFloor = async (floorId: number): Promise<boolean> => {
 };
 
 // Get All Buildings and Floors
-// Get All Buildings and Floors
 export const getAllBuildingsAndFloors = async (): Promise<BuildingEntity[]> => {
     return await Building.findAll({
         include: [{
             model: Floor,
-            as: 'floors', // Match the alias from Building.hasMany
+            as: 'floors',
             attributes: ['id', 'name', 'description'],
         }],
     });

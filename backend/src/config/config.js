@@ -42,7 +42,5 @@ const sequelize = new Sequelize({
   logging: false,
 });
 
-module.exports = {
-  sequelize,
-  config,
-};
+module.exports = config;
+module.exports.sequelize = sequelize;

@@ -304,7 +304,7 @@ const updateFloorsForFloorPlan = () => {
     (b) => b.id === Number(selectedBuildingIdForFloorPlan.value)
   );
   floorsForFloorPlan.value = building ? building.floors : [];
-  selectedFloorIdForFloorPlan.value = ''; // Reset floor selection
+  selectedFloorIdForFloorPlan.value = '';
 };
 
 const editBuilding = (building: any) => {

@@ -41,7 +41,7 @@ interface Booking {
   buildingName: string;
   floorName: string;
   seatNumber: string;
-  date: string; // Assuming date is a string like "YYYY-MM-DD"
+  date: string; // "YYYY-MM-DD"
   [key: string]: any; // Allow for additional fields if needed
 }
 
@@ -59,16 +59,14 @@ const fetchBookings = async (): Promise<void> => {
   }
 };
 
-// Type the handleDelete function
 const handleDelete = async (bookingId: number): Promise<void> => {
   if (!confirm('Are you sure you want to delete this booking?')) return;
   try {
     await deleteBooking(bookingId);
     console.log('Booking deleted:', bookingId);
     alert('Booking deleted successfully!');
-    await fetchBookings(); // Refresh list
+    await fetchBookings();
   } catch (err: unknown) {
-    // Type assertion for error handling
     const error = err as { response?: { data?: { message?: string } } };
     console.error('Failed to delete booking:', err);
     alert('Failed to delete booking: ' + (error.response?.data?.message || 'Unknown error'));

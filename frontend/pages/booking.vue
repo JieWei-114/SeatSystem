@@ -220,7 +220,7 @@ const loadFloorPlan = async () => {
       return;
     }
 
-    // Preload the image like FloorPlanEditor
+    // Preload the image
     const imgElement = new Image();
     imgElement.crossOrigin = 'anonymous';
     imgElement.src = imageUrl;
@@ -230,7 +230,7 @@ const loadFloorPlan = async () => {
 
       // Get the container width dynamically
       const containerWidth = canvasEl.parentElement.clientWidth;
-      const canvasHeight = 500; // Fixed height from CSS
+      const canvasHeight = 500;
 
       const bgImage = new fabric.FabricImage(imgElement, {
         scaleX: containerWidth / imgElement.width, // Scale to fit container width
@@ -248,8 +248,8 @@ const loadFloorPlan = async () => {
 
       // Initialize new canvas with background image
       fabricCanvas = new fabric.Canvas(canvasEl, {
-        width: containerWidth, // Match container width
-        height: canvasHeight, // Fixed height
+        width: containerWidth,
+        height: canvasHeight,
         backgroundImage: bgImage,
       });
 
@@ -295,20 +295,23 @@ const loadFloorPlan = async () => {
           left: seatData.x,
           top: seatData.y,
           angle: seatData.angle || 0,
-          width: 15,
-          height: 15,
+          // apply saved size/scale if present so booking view reflects editor changes
+          scaleX: seatData.scaleX || 1,
+          scaleY: seatData.scaleY || 1,
+          width: seatData.width || 15,
+          height: seatData.height || 15,
           fill: isBooked ? 'red' : seatData.available ? '#0fae00' : '#888888',
           selectable: !isBooked && seatData.available,
           evented: true,
-          lockMovementX: true, // Lock movement horizontally
-          lockMovementY: true, // Lock movement vertically
-          lockRotation: true, // Prevent rotation
-          lockScalingX: true, // Prevent horizontal scaling
-          lockScalingY: true, // Prevent vertical scaling
-          hasControls: false, // Hide rotate/resize controls
-          hasBorders: true, // Keep selection border visible
+          lockMovementX: true,
+          lockMovementY: true,
+          lockRotation: true,
+          lockScalingX: true,
+          lockScalingY: true,
+          hasControls: false,
+          hasBorders: true,
           hoverCursor: (!isBooked && seatData.available) ? 'pointer' : 'not-allowed',
-      });
+        });
         seat.seatData = seatData;
         fabricCanvas.add(seat);
         console.log('Seat added:', seatData);

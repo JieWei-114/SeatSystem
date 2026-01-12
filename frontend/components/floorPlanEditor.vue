@@ -207,6 +207,7 @@ const initCanvas = () => {
 
   fabricCanvas.on("object:moving", (e) => updateSeatPosition(e.target));
   fabricCanvas.on("object:rotating", (e) => updateSeatRotation(e.target));
+  fabricCanvas.on("object:scaling", (e) => updateSeatScale(e.target));
   fabricCanvas.on("selection:created", (e) => selectSeat(e.selected?.[0]));
   fabricCanvas.on("selection:updated", (e) => selectSeat(e.selected?.[0]));
   fabricCanvas.on("selection:cleared", () => (selectedSeat.value = null));
@@ -255,6 +256,7 @@ const uploadFloorPlan = (event) => {
 
       fabricCanvas.on("object:moving", (e) => updateSeatPosition(e.target));
       fabricCanvas.on("object:rotating", (e) => updateSeatRotation(e.target));
+      fabricCanvas.on("object:scaling", (e) => updateSeatScale(e.target));
       fabricCanvas.on("selection:created", (e) => selectSeat(e.selected?.[0]));
       fabricCanvas.on("selection:updated", (e) => selectSeat(e.selected?.[0]));
       fabricCanvas.on("selection:cleared", () => (selectedSeat.value = null));
@@ -325,8 +327,10 @@ const loadFloorPlan = async () => {
             lockMovementX: true,
             lockMovementY: true,
             lockRotation: true,
-            lockScalingX: true,
-            lockScalingY: true,
+            lockScalingX: seatData.locked ? true : (seatData.scaleX ? false : true),
+            lockScalingY: seatData.locked ? true : (seatData.scaleY ? false : true),
+            scaleX: seatData.scaleX || 1,
+            scaleY: seatData.scaleY || 1,
             selectable: true,
             evented: true,
             hasControls: true,
@@ -387,8 +391,8 @@ const addSeat = () => {
     lockMovementX: false,
     lockMovementY: false,
     lockRotation: false,
-    lockScalingX: true,
-    lockScalingY: true,
+    lockScalingX: false,
+    lockScalingY: false,
     cornerSize: 6,
   });
   fabricCanvas.add(seat);
@@ -400,6 +404,10 @@ const addSeat = () => {
     y: seat.top || 0,
     angle: seat.angle || 0,
     locked: false,
+    scaleX: seat.scaleX || 1,
+    scaleY: seat.scaleY || 1,
+    width: (seat.width || 0) * (seat.scaleX || 1),
+    height: (seat.height || 0) * (seat.scaleY || 1),
   };
   seats.value.push(seatData);
   seat.seatData = seatData;
@@ -431,6 +439,20 @@ const updateSeatRotation = (target) => {
   const seatData = target.seatData;
   if (seatData) {
     seatData.angle = target.angle || 0;
+  }
+};
+
+const updateSeatScale = (target) => {
+  const seatData = target.seatData;
+  if (seatData) {
+    seatData.scaleX = target.scaleX || 1;
+    seatData.scaleY = target.scaleY || 1;
+    try {
+      seatData.width = (target.width || 0) * (target.scaleX || 1);
+      seatData.height = (target.height || 0) * (target.scaleY || 1);
+    } catch (e) {
+      // ignore
+    }
   }
 };
 
@@ -468,6 +490,8 @@ const unlockSeat = () => {
       lockRotation: false,
       selectable: true,
       evented: true,
+      lockScalingX: false,
+      lockScalingY: false,
     });
     activeObject.seatData.locked = false;
     fabricCanvas.renderAll();
@@ -542,6 +566,10 @@ const saveFloorPlan = async () => {
         x: seat.left || 0,
         y: seat.top || 0,
         angle: seat.angle || 0,
+        scaleX: seat.scaleX || 1,
+        scaleY: seat.scaleY || 1,
+        width: (seat.width || 0) * (seat.scaleX || 1),
+        height: (seat.height || 0) * (seat.scaleY || 1),
       }));
 
     let floorPlan;
