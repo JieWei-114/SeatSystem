@@ -1,6 +1,6 @@
-# SeatSystem
+# Seat booking solution
 
-SeatSystem is a full-stack seat booking solution built with a Nuxt 3 (Vue 3) frontend and a Node.js + TypeScript backend.  
+BleakFuture is a full-stack seat booking solution built with a Nuxt 3 (Vue 3) frontend and a Node.js + TypeScript backend.  
 The project demonstrates a clean frontend–backend separation and provides basic seat browsing and booking functionality.
 
 ---
