@@ -27,22 +27,25 @@ Role-based access support (e.g. admin / super admin)
 
 ## Tech Stack
 Frontend
-Nuxt 3 (Vue 3 + Vite)
-TypeScript + JavaScript
-Pinia (State Management)
-Tailwind CSS
-Axios
-Fabric.js (Canvas-based floor plan editor)
+
+Nuxt 3 (Vue 3 + Vite) 
+TypeScript + JavaScript 
+Pinia (State Management) 
+Tailwind CSS 
+Axios 
+Fabric.js (Canvas-based floor plan editor) 
 
 Backend
-Node.js
-Express
-TypeScript
-Sequelize ORM
-PostgreSQL (or other SQL databases)
+
+Node.js 
+Express 
+TypeScript 
+Sequelize ORM 
+PostgreSQL (or other SQL databases) 
 
 ### Floor Plan Editor (Fabric.js)
 The floor plan editor is implemented using Fabric.js, providing a canvas-based editing experience.
+
 Editor Capabilities
 Upload any image format as a floor plan background
 Drag & drop seats onto the canvas
@@ -56,18 +59,20 @@ Easy future extension (zones, meeting rooms, equipment, etc.)
 Visual consistency between admin editing and user booking views
 
 ## Prerequisites
-Node.js >= 18
-npm
-PostgreSQL (for backend database)
+Node.js >= 18 
+npm 
+PostgreSQL (for backend database) 
 
 ## Quick Start
 Backend setup (development)
+
 cd backend
 npm install
 cp .env.example .env   # create and edit .env as needed
 npm run dev
 
 Frontend setup (development)
+
 cd frontend
 npm install
 npm run dev
