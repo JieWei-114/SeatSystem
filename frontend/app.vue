@@ -1,15 +1,11 @@
 <template>
   <div class="flex min-h-screen">
-    <Navbar v-if="authStore.isAuthenticated" />
-    <main
-      class="flex-1"
-      :class="{
-        'ml-[15%]': authStore.isAuthenticated,
-        'ml-0': !authStore.isAuthenticated,
-      }"
-    >
-      <NuxtPage />
-    </main>
+    <ClientOnly>
+      <Navbar v-if="authStore.isAuthenticated" />
+      <main class="flex-1 ml-0" :class="{ 'ml-[15%]': authStore.isAuthenticated }">
+        <NuxtPage />
+      </main>
+    </ClientOnly>
   </div>
 </template>
 

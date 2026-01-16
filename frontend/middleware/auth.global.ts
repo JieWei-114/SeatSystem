@@ -2,7 +2,15 @@ import { defineNuxtRouteMiddleware, navigateTo } from '../node_modules/nuxt/dist
 import { useAuthStore } from '../stores/auth';
 
 export default defineNuxtRouteMiddleware((to) => {
+  if (!process.client) {
+    return;
+  }
+
   const authStore = useAuthStore();
+  if (!authStore.token) {
+    authStore.loadAuth();
+  }
+
   const publicPages = ['/login', '/register'];
 
   // If not authenticated and not on a public page, redirect to login
