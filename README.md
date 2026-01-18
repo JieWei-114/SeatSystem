@@ -7,7 +7,7 @@ The project demonstrates a clean frontend–backend separation and includes an i
 **Floor Plan & Seat Management**
 
 Upload floor plans using any image format (PNG / JPG / SVG, etc.)
-Interactive floor plan editor built with Fabric.js
+Interactive floor plan editor built with Fabric.js + JavaScript
 Drag, move, and arrange seats directly on the floor plan
 Visual seat positioning with real-time preview
 Persist seat layout data to backend
@@ -56,7 +56,6 @@ PostgreSQL (or other SQL databases)
 
 ### Floor Plan Editor (Fabric.js)
 The floor plan editor is implemented using Fabric.js, providing a canvas-based editing experience
-Editor Capabilities
 Upload any image format as a floor plan background
 Drag & drop seats onto the canvas
 Move, align, and reposition seats freely
@@ -83,7 +82,7 @@ cd backend
 
 npm install
 
-cp .env.example .env   # create and edit .env as needed
+cp .env.example .env   # create and edit .env as needed, refer to backend readme
 
 npm run dev
 
@@ -100,6 +99,7 @@ npm run dev
 Frontend will be available at:
 
 http://localhost:3000
+
 
 ### Linting & Formatting
 
@@ -134,6 +134,5 @@ backend/public/uploads/floorplans/
 ![App screenshot](assets/screenshot1.png)
 ![App screenshot](assets/screenshot2.png)
 ![App screenshot](assets/screenshot3.png)
-
 
 

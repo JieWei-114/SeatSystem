@@ -163,6 +163,10 @@ watch([selectedDate], () => {
 //   fabricCanvas.renderAll();
 // };
 
+const hasBookedOnDate = (date) => {
+  return bookingHistory.value.some(b => b.date === date);
+};
+
 const fetchBuildings = async () => {
   try {
     const data = await getBuildingsAndFloors();
@@ -264,7 +268,10 @@ const loadFloorPlan = async () => {
       //   opt.e.preventDefault();
       //   opt.e.stopPropagation();
       // });
-
+      
+      // FaricJs is fine for a simple demos or basic drawing. 
+      // But for complex, rule-driven editors, the code will become messy and hard to debug. 
+      // The document is outdated and incomplete many examples dont match current versions, solution found online offten dont work as expected. 
       // https://fabricjs.com/docs/old-docs/fabric-intro-part-5/
 
       const date = selectedDate.value || today;
@@ -381,6 +388,11 @@ const loadFloorPlan = async () => {
   }
 };
 const bookSelectedSeat = async () => {
+  if (hasBookedOnDate(selectedDate.value)) {
+    alert('You already booked a seat for this date.');
+    return;
+  }
+
   if (!selectedDate.value || !selectedSeat.value || !selectedSeat.value.available) {
     alert('Please select a date and an available seat.');
     return;
@@ -404,17 +416,15 @@ const bookSelectedSeat = async () => {
     // Disable selection after booking
     selectedSeat.value.available = false;
     fabricCanvas.getObjects().forEach(obj => {
-      if (obj.seatData && obj.seatData.id === selectedSeat.value.id) {
+      if (obj.seatData.id === selectedSeat.value.id) {
         obj.set('fill', '#888888');
         obj.set('selectable', false);
         obj.set('hoverCursor', 'not-allowed');
       }
     });
 
-    fabricCanvas.renderAll();
     fetchBookingHistory();
     selectedSeat.value = null;
-    fabricCanvas.discardActiveObject();
   } catch (err) {
     console.error('Failed to book seat:', err);
     alert('Failed to book seat: ' + (err.message || 'Unknown error'));
