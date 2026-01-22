@@ -1,4 +1,4 @@
-# Seat Booking Solution
+# Workspace Management System
 
 BleakFuture is a full-stack seat booking solution built with Nuxt 3 (Vue 3) for the frontend and Node.js + TypeScript for the backend.
 The project demonstrates a clean frontend–backend separation and includes an interactive floor plan editor for seat layout management.
