@@ -1,6 +1,6 @@
 <template>
   <div class="p-10">
-    <div class="flex mb-4 justify-between">
+    <div class="flex mb-4 justify-between md:flex-row flex-col">
       <h1 class="text-2xl font-bold">Profile</h1>
       <div v-if="authStore.user" class="flex text-lg items-center">
         <h1>Current username: &nbsp;</h1>

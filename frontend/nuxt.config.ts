@@ -14,4 +14,12 @@ export default defineNuxtConfig({
     },
   },
   css: ['~/assets/css/tailwind.css'],
+  app: {
+    head: {
+      title: 'Bleak Future',
+      link: [
+        { rel: 'icon', type: 'image/png', href: '/B_icon.png' } 
+      ]
+    }
+  }
 });

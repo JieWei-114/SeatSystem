@@ -20,14 +20,14 @@ export const useAuthStore = defineStore('auth', {
       this.user = user;
       this.expiredAt = expiredAt;
 
-      if (process.client) {
+      if (typeof window !== 'undefined') {
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(user));
         localStorage.setItem('expiredAt', expiredAt.toString());
       }
     },
     loadAuth() {
-      if (!process.client) return;
+      if (typeof window === 'undefined') return;
 
       const token = localStorage.getItem('token');
       const user = localStorage.getItem('user');
@@ -43,16 +43,22 @@ export const useAuthStore = defineStore('auth', {
         return;
       }
 
-      this.token = token;
-      this.user = JSON.parse(user);
-      this.expiredAt = Number(expiredAt);
+      try {
+        this.token = token;
+        this.user = JSON.parse(user);
+        this.expiredAt = Number(expiredAt);
+      } catch (e) {
+        console.error('Failed to parse user data from localStorage');
+        this.clearAuth();
+      }
     },
+
     clearAuth() {
       this.token = null;
       this.user = null;
       this.expiredAt = null;
 
-      if (process.client) {
+      if (typeof window !== 'undefined') {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         localStorage.removeItem('expiredAt');
@@ -60,6 +66,9 @@ export const useAuthStore = defineStore('auth', {
     },
   },
   getters: {
-    isAuthenticated: (state) => !!state.token && !!state.user && (!!state.expiredAt && Date.now() < state.expiredAt),
+    isAuthenticated: (state) => {
+      if (!state.token || !state.user || !state.expiredAt) return false;
+      return Date.now() < state.expiredAt;
+    },
   },
 });

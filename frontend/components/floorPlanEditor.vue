@@ -1,152 +1,163 @@
 <template>
-  <div class="">
-    <div class="w-full mt-2 p-5 border rounded bg-gray-300 mb-2">
-      <h1 class="font-bold text-xl pb-2">Floor Plan Editor</h1>
-      <div class="flex justify-between">
-        <div v-if="!isViewingFloorPlan">
-          <input type="file" accept="image/*" @change="uploadFloorPlan" />
+  <div class="bg-gray-100 min-h-screen">
+    <div class="w-full mt-2 p-3 md:p-5 border rounded bg-gray-300 mb-2">
+      <h1 class="font-bold text-lg md:text-xl pb-2 border-b border-gray-400 mb-3">
+        Floor Plan Editor
+      </h1>
+
+      <div class="flex flex-col gap-4">
+        <div v-if="!isViewingFloorPlan" class="w-full">
+          <input
+            type="file"
+            accept="image/*"
+            @change="uploadFloorPlan"
+            class="text-sm w-full file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-gray-500 file:text-white hover:file:bg-gray-600"
+          />
         </div>
-        <div v-if="!isViewingFloorPlan">
-          <button class="mr-2 p-1 pl-3 pr-3 bg-gray-500 rounded text-white" @click="addSeat">
-            Add Seat
-          </button>
-          <button
-            class="mr-2 p-1 pl-3 pr-3 bg-gray-500 rounded text-white"
-            :disabled="!selectedSeat"
-            @click="deleteSeat"
-          >
-            Delete Seat
-          </button>
-          <button
-            class="mr-2 p-1 pl-3 pr-3 bg-gray-500 rounded text-white"
-            :disabled="!selectedSeat"
-            @click="lockSeat"
-          >
-            Lock Seat
-          </button>
-          <button
-            class="mr-2 p-1 pl-3 pr-3 bg-gray-500 rounded text-white"
-            :disabled="!selectedSeat"
-            @click="unlockSeat"
-          >
-            Unlock Seat
-          </button>
-        </div>
-        <div>
-          <button class="p-1 pl-3 pr-3 bg-gray-500 rounded text-white" @click="saveFloorPlan">
-            Save Floor Plan
+
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div v-if="!isViewingFloorPlan" class="flex flex-wrap gap-2">
+            <button class="btn-primary" @click="addSeat">Add Seat</button>
+            <button class="btn-danger" :disabled="!selectedSeat" @click="deleteSeat">Delete</button>
+            <button class="btn-action" :disabled="!selectedSeat" @click="lockSeat">Lock</button>
+            <button class="btn-action" :disabled="!selectedSeat" @click="unlockSeat">Unlock</button>
+          </div>
+
+          <button class="btn-save w-full sm:w-auto ml-auto" @click="saveFloorPlan">
+            Save Plan
           </button>
         </div>
       </div>
     </div>
-    <div class="canvas-container border-black border-2 rounded-xl">
-      <canvas ref="canvasElement"></canvas>
+
+    <div
+      class="canvas-container border-black border-2 rounded-xl bg-white overflow-hidden relative"
+    >
+      <canvas ref="canvasElement" class="max-w-full h-auto mx-auto block"></canvas>
     </div>
-    <div class="w-full mt-2 p-2 border rounded bg-gray-300 relative h-[180px]">
-      <div class="flex">
-        <div v-if="selectedSeat">
-          <h2 class="font-bold text-lg">Seat info</h2>
-          <label>
-            Seat Number:
-            <input
-              class="border rounded bg-gray-100 ml-1 pl-2 p-1 text-sm"
-              v-model="selectedSeat.seatNumber"
-            />
-          </label>
-          <label>
-            Description:
-            <input
-              class="border rounded bg-gray-100 ml-1 pl-2 p-1 text-sm"
-              v-model="selectedSeat.description"
-            />
-          </label>
-          <label>
-            <div class="flex items-center cursor-pointer">
-              <span class="mr-1">Available:</span>
-              <input type="checkbox" v-model="selectedSeat.available" class="hidden" />
-              <div
-                class="w-4 h-4 bg-gray-500 border-2 border-gray-600 rounded flex items-center justify-center transition-all"
+
+    <div
+      class="w-full mt-2 p-3 md:p-4 border rounded bg-gray-300 relative min-h-[220px] md:h-[180px]"
+    >
+      <div class="flex flex-col md:flex-row justify-between gap-6">
+        <div v-if="selectedSeat" class="flex-1 space-y-3">
+          <h2 class="font-bold text-lg border-b border-gray-400 pb-1">Seat Info</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <label class="flex flex-col text-sm font-medium">
+              Seat Number:
+              <input
+                class="mt-1 border rounded bg-gray-100 p-2 text-sm focus:ring-2 focus:ring-blue-400 outline-none"
+                v-model="selectedSeat.seatNumber"
+              />
+            </label>
+            <label class="flex flex-col text-sm font-medium">
+              Description:
+              <input
+                class="mt-1 border rounded bg-gray-100 p-2 text-sm focus:ring-2 focus:ring-blue-400 outline-none"
+                v-model="selectedSeat.description"
+              />
+            </label>
+          </div>
+
+          <div
+            class="flex items-center mt-2 cursor-pointer group"
+            @click="selectedSeat.available = !selectedSeat.available"
+          >
+            <span class="mr-2 text-sm font-medium">Available:</span>
+            <div
+              class="w-5 h-5 border-2 rounded flex items-center justify-center transition-all"
+              :class="
+                selectedSeat.available
+                  ? 'bg-green-500 border-green-600'
+                  : 'bg-gray-400 border-gray-500'
+              "
+            >
+              <svg
+                v-if="selectedSeat.available"
+                class="w-3.5 h-3.5 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                <svg
-                  v-if="selectedSeat.available"
-                  class="w-3 h-3 text-white"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="3"
+                <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                >
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-              </div>
+                  stroke-width="3"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
             </div>
-          </label>
+          </div>
         </div>
+
+        <div v-else class="flex-1 flex items-center justify-center text-gray-500 italic">
+          Select a seat to edit details
+        </div>
+
         <div
-          class="grid grid-cols-3 gap-2 m-3 w-[15%] absolute right-[10px]"
           v-if="!isViewingFloorPlan"
+          class="grid grid-cols-3 gap-1.5 w-[140px] mx-auto md:mx-0 shrink-0"
         >
           <button
-            class="p-2 bg-gray-500 text-white rounded hover:bg-gray-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
-            :disabled="!selectedSeat || selectedSeat.locked"
             @click="moveSeat('upper-left')"
+            :disabled="!selectedSeat || selectedSeat.locked"
+            class="dpad-btn"
           >
             ⇖
           </button>
           <button
-            class="p-2 bg-gray-500 text-white rounded hover:bg-gray-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
-            :disabled="!selectedSeat || selectedSeat.locked"
             @click="moveSeat('up')"
+            :disabled="!selectedSeat || selectedSeat.locked"
+            class="dpad-btn"
           >
             ⇑
           </button>
           <button
-            class="p-2 bg-gray-500 text-white rounded hover:bg-gray-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
-            :disabled="!selectedSeat || selectedSeat.locked"
             @click="moveSeat('upper-right')"
+            :disabled="!selectedSeat || selectedSeat.locked"
+            class="dpad-btn"
           >
             ⇗
           </button>
           <button
-            class="p-2 bg-gray-500 text-white rounded hover:bg-gray-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
-            :disabled="!selectedSeat || selectedSeat.locked"
             @click="moveSeat('left')"
+            :disabled="!selectedSeat || selectedSeat.locked"
+            class="dpad-btn"
           >
             ⇐
           </button>
           <button
-            class="p-2 bg-gray-500 text-white rounded hover:bg-gray-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
-            :disabled="!selectedSeat || selectedSeat.locked"
             @click="moveSeat('rotation')"
+            :disabled="!selectedSeat || selectedSeat.locked"
+            class="dpad-btn bg-blue-600 hover:bg-blue-700"
           >
             ↺
           </button>
           <button
-            class="p-2 bg-gray-500 text-white rounded hover:bg-gray-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
-            :disabled="!selectedSeat || selectedSeat.locked"
             @click="moveSeat('right')"
+            :disabled="!selectedSeat || selectedSeat.locked"
+            class="dpad-btn"
           >
             ⇒
           </button>
           <button
-            class="p-2 bg-gray-500 text-white rounded hover:bg-gray-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
-            :disabled="!selectedSeat || selectedSeat.locked"
             @click="moveSeat('lower-left')"
+            :disabled="!selectedSeat || selectedSeat.locked"
+            class="dpad-btn"
           >
             ⇙
           </button>
           <button
-            class="p-2 bg-gray-500 text-white rounded hover:bg-gray-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
-            :disabled="!selectedSeat || selectedSeat.locked"
             @click="moveSeat('down')"
+            :disabled="!selectedSeat || selectedSeat.locked"
+            class="dpad-btn"
           >
             ⇓
           </button>
           <button
-            class="p-2 bg-gray-500 text-white rounded hover:bg-gray-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
-            :disabled="!selectedSeat || selectedSeat.locked"
             @click="moveSeat('lower-right')"
+            :disabled="!selectedSeat || selectedSeat.locked"
+            class="dpad-btn"
           >
             ⇘
           </button>
@@ -598,5 +609,24 @@ const saveFloorPlan = async () => {
 label {
   display: block;
   margin: 10px 0;
+}
+
+.btn-primary {
+  @apply p-2 px-4 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors text-sm font-medium;
+}
+.btn-danger {
+  @apply p-2 px-4 bg-red-500 text-white rounded hover:bg-red-600 disabled:bg-red-300 text-sm font-medium;
+}
+.btn-action {
+  @apply p-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-blue-300 text-sm font-medium;
+}
+.btn-save {
+  @apply p-2 px-6 bg-green-600 text-white rounded hover:bg-green-700 text-sm font-medium;
+}
+
+.dpad-btn {
+  @apply aspect-square flex items-center justify-center bg-gray-600 text-white rounded-md 
+         hover:bg-gray-700 active:scale-95 transition-all 
+         disabled:bg-gray-400 disabled:cursor-not-allowed text-lg shadow-sm;
 }
 </style>

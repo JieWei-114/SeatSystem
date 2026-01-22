@@ -19,11 +19,13 @@
           <td class="p-3">{{ booking.date }}</td>
           <td class="p-3">
             <button
+              v-if="!dayjs(booking.date).isBefore(dayjs().startOf('day'))"
               @click="handleDelete(booking.id)"
               class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
             >
               Delete
             </button>
+            <span v-else class="text-gray-500 text-sm">Complete</span>
           </td>
         </tr>
       </tbody>
@@ -34,6 +36,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { getBookingHistory, deleteBooking } from '../services/api';
+import dayjs from 'dayjs';
 
 // Define the Booking interface based on expected API response
 interface Booking {
@@ -52,15 +55,29 @@ const bookings = ref<Booking[]>([]);
 const fetchBookings = async (): Promise<void> => {
   try {
     const response: Booking[] = await getBookingHistory();
-    bookings.value = response;
-    console.log('Bookings fetched:', bookings.value);
+    // sort by date
+    bookings.value = response.sort((a, b) => dayjs(b.date).unix() - dayjs(a.date).unix());
+    console.log('Bookings fetched & sorted:', bookings.value);
   } catch (err: unknown) {
     console.error('Failed to fetch bookings:', err);
   }
 };
 
 const handleDelete = async (bookingId: number): Promise<void> => {
+  const targetBooking = bookings.value.find(b => b.id === bookingId);
+
+  if (targetBooking) {
+    const today = dayjs().startOf('day');
+    const bookingDate = dayjs(targetBooking.date);
+
+    if (bookingDate.isBefore(today)) {
+      alert('Booking history (records prior to today) cannot be deleted!');
+      return;
+    }
+  }
+
   if (!confirm('Are you sure you want to delete this booking?')) return;
+
   try {
     await deleteBooking(bookingId);
     console.log('Booking deleted:', bookingId);

@@ -20,7 +20,7 @@
             />
           </div>
           <div class="w-[35%] pr-8">
-            <label class="block mb-2">Select Building and Floor</label>
+            <label class="block mb-2">Building</label>
             <select
               v-model="selectedBuildingId"
               @change="updateFloors"
@@ -33,11 +33,12 @@
               </option>
             </select>
           </div>
-          <div class="w-[20%] pr-8">
+          <div class="w-[25%] pr-8">
+            <label class="block mb-2">Floor</label>
             <select
               v-model="selectedFloorId"
               @change="loadFloorPlan"
-              class="w-full p-2 border rounded mt-8"
+              class="w-full p-2 border rounded"
               :disabled="!selectedBuildingId"
             >
               <option value="">Select Floor</option>

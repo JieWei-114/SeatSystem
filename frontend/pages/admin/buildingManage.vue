@@ -1,8 +1,8 @@
 <template>
   <div class="p-10">
     <h1 class="text-2xl font-bold mb-4">Building Manage</h1>
-    <div class="flex justify-between">
-      <div v-if="isSuperAdmin" class="w-[40%] bg-gray-300 p-5 rounded-md max-h-[480px]">
+    <div class="flex flex-col lg:flex-row justify-between gap-6">
+      <div v-if="isSuperAdmin" class="w-full lg:w-[40%] bg-gray-300 p-5 rounded-md h-fit max-h-none">
         <!-- Add Building (Super Admin only) -->
         <div class="mb-5">
           <h2 class="text-xl font-semibold mb-5">Add Building</h2>
@@ -56,87 +56,103 @@
         </div>
       </div>
 
-      <!-- Manage Buildings and Floors -->
-      <div class="mb-4 w-[58%] bg-gray-300 p-5 rounded-md" :class="{ 'w-full': !isSuperAdmin }">
+      <div 
+        class="w-full lg:w-[58%] bg-gray-300 p-4 md:p-6 rounded-md max-h-[475px] flex flex-col" 
+        :class="{ 'w-full': !isSuperAdmin }"
+      >
         <h2 class="text-xl mb-5 font-semibold">Buildings and Floors</h2>
-        <div v-for="building in buildings" :key="building.id" class="mb-4 rounded-xl">
-          <div class="flex justify-between bg-white p-2">
-            <input
-              v-if="editingBuildingId === building.id"
-              v-model="editedBuildingName"
-              type="text"
-              class="p-1 border rounded"
-            />
-            <span class="pl-1 text-lg" v-else>{{ building.name }}</span>
-            <div class="space-x-2">
-              <button
-                v-if="editingBuildingId === building.id"
-                @click="saveBuilding(building.id)"
-                class="p-1 pl-4 pr-4 bg-green-500 text-white rounded"
-              >
-                Save
-              </button>
-              <button
-                v-else
-                @click="editBuilding(building)"
-                class="p-1 pl-4 pr-4 bg-gray-500 text-white rounded"
-              >
-                Edit
-              </button>
-              <button
-                @click="deleteBuildingConfirm(building.id)"
-                class="p-1 pl-4 pr-4 bg-red-500 text-white rounded"
-              >
-                Delete
-              </button>
+        
+        <div class="overflow-y-auto rounded-md pr-1">
+          <div v-for="building in buildings" :key="building.id" class="mb-4 rounded-xl overflow-hidden shadow-sm">
+            
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-3 border-b gap-3">
+              <div class="flex-1 w-full">
+                <input
+                  v-if="editingBuildingId === building.id"
+                  v-model="editedBuildingName"
+                  type="text"
+                  class="p-1 border rounded w-full sm:w-auto focus:ring-2 focus:ring-blue-400 outline-none"
+                />
+                <span class="pl-1 text-lg font-bold text-gray-800" v-else>{{ building.name }}</span>
+              </div>
+              
+              <div class="flex space-x-2 w-full sm:w-auto justify-end">
+                <button
+                  v-if="editingBuildingId === building.id"
+                  @click="saveBuilding(building.id)"
+                  class="flex-1 sm:flex-none p-1 px-4 bg-green-500 text-white rounded hover:bg-green-600"
+                >
+                  Save
+                </button>
+                <button
+                  v-else
+                  @click="editBuilding(building)"
+                  class="flex-1 sm:flex-none p-1 px-4 bg-gray-500 text-white rounded hover:bg-gray-600"
+                >
+                  Edit
+                </button>
+                <button
+                  @click="deleteBuildingConfirm(building.id)"
+                  class="flex-1 sm:flex-none p-1 px-4 bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
-          </div>
-          <div
-            v-for="floor in building.floors"
-            :key="floor.id"
-            class="pl-6 flex justify-between bg-white p-2"
-          >
-            <div class="flex">
-              <input
-                v-if="editingFloorId === floor.id"
-                v-model="editedFloorName"
-                type="text"
-                class="p-1 border rounded mr-2 w-[100px]"
-              />
-              <input
-                v-if="editingFloorId === floor.id"
-                v-model="editedFloorDescription"
-                class="p-1 border rounded resize-none w-[250px]"
-              />
-              <span v-else>{{ floor.name }} - {{ floor.description }}</span>
-            </div>
-            <div class="space-x-2">
-              <button
-                v-if="editingFloorId === floor.id"
-                @click="saveFloor(floor.id)"
-                class="p-1 pl-4 pr-4 bg-green-500 text-white rounded"
-              >
-                Save
-              </button>
-              <button
-                v-else
-                @click="editFloor(floor)"
-                class="p-1 pl-4 pr-4 bg-gray-500 text-white rounded"
-              >
-                Edit
-              </button>
-              <button
-                @click="deleteFloorConfirm(floor.id)"
-                class="p-1 pl-4 pr-4 bg-red-500 text-white rounded"
-              >
-                Delete
-              </button>
-              <button
-                @click="openFloorPlanEditor(floor.id)"
-                class="p-1 pl-4 pr-4 bg-purple-500 text-white rounded"
-              >
-                View
-              </button>
+
+            <div
+              v-for="floor in building.floors"
+              :key="floor.id"
+              class="pl-4 md:pl-8 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-gray-50 p-3 border-b last:border-b-0 gap-3"
+            >
+              <div class="flex flex-col md:flex-row gap-2 w-full sm:flex-1">
+                <template v-if="editingFloorId === floor.id">
+                  <input
+                    v-model="editedFloorName"
+                    type="text"
+                    placeholder="Name"
+                    class="p-1 border rounded w-full md:w-[100px]"
+                  />
+                  <input
+                    v-model="editedFloorDescription"
+                    placeholder="Description"
+                    class="p-1 border rounded w-full md:w-[200px]"
+                  />
+                </template>
+                <div v-else class="text-sm md:text-base">
+                  <span class="font-medium text-blue-700">{{ floor.name }}</span>
+                  <span class="text-gray-500 ml-2">- {{ floor.description }}</span>
+                </div>
+              </div>
+
+              <div class="flex flex-wrap gap-2 w-full sm:w-auto justify-end">
+                <button
+                  v-if="editingFloorId === floor.id"
+                  @click="saveFloor(floor.id)"
+                  class="text-sm p-1 px-3 bg-green-500 text-white rounded hover:bg-green-600"
+                >
+                  Save
+                </button>
+                <button
+                  v-else
+                  @click="editFloor(floor)"
+                  class="text-sm p-1 px-3 bg-gray-500 text-white rounded hover:bg-gray-600"
+                >
+                  Edit
+                </button>
+                <button
+                  @click="deleteFloorConfirm(floor.id)"
+                  class="text-sm p-1 px-3 bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  Delete
+                </button>
+                <button
+                  @click="openFloorPlanEditor(floor.id)"
+                  class="text-sm p-1 px-3 bg-purple-500 text-white rounded hover:bg-purple-600"
+                >
+                  View
+                </button>
+              </div>
             </div>
           </div>
         </div>
