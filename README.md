@@ -28,7 +28,7 @@ Role-based access support (e.g. admin / super admin)
 
 ## Tech Stack
 **Frontend**
-
+````
 Nuxt 3 (Vue 3 + Vite) 
 
 TypeScript + JavaScript 
@@ -40,10 +40,10 @@ Tailwind CSS
 Axios 
 
 Fabric.js (Canvas-based floor plan editor) 
-
+````````
 
 **Backend**
-
+````
 Node.js 
 
 Express 
@@ -53,7 +53,7 @@ TypeScript
 Sequelize ORM 
 
 PostgreSQL (or other SQL databases) 
-
+````
 
 ### Floor Plan Editor (Fabric.js)
 The floor plan editor is implemented using Fabric.js, providing a canvas-based editing experience
@@ -69,16 +69,17 @@ Easy future extension (zones, meeting rooms, equipment, etc.)
 Visual consistency between admin editing and user booking views
 
 ## Prerequisites
+````
 Node.js >= 18 
 
 npm 
 
 PostgreSQL (for backend database) 
-
+````
 
 ## Quick Start
 **Backend setup (development)**
-
+````
 cd backend
 
 npm install
@@ -86,47 +87,52 @@ npm install
 cp .env.example .env   # create and edit .env as needed, refer to backend readme
 
 npm run dev
+````
 
 
 **Frontend setup (development)**
-
+````
 cd frontend
 
 npm install
 
 npm run dev
 
-
-Frontend will be available at:
+````
+**Frontend will be available at:**
 
 http://localhost:3000
-
 
 ### Linting & Formatting
 
 Both backend and frontend include ESLint and Prettier configurations.
 
 **Backend**
+````
 cd backend
 npm run lint
 npm run lint:fix
 npm run format
+````
 
 **Frontend**
+````
 cd frontend
 npm run lint
 npm run lint:fix
 npm run format
+````
 
 ## Useful Notes
 
 Backend migrations:
-
+````
 npx sequelize-cli db:migrate
 
 (Run from backend/ directory)
 
 Floor plan images are stored in:
+````
 
 backend/public/uploads/floorplans/
 
@@ -136,7 +142,7 @@ backend/public/uploads/floorplans/
 ![App screenshot](assets/screenshot2.png)
 ![App screenshot](assets/screenshot3.png)
 
-### This was mainly for practice purposes, so I wouldn’t recommend using it.
+### This was mainly for practice purposes
 
 ````
 FaricJs is fine for a simple demos or basic drawing.
