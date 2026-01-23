@@ -39,7 +39,7 @@
     </div>
 
     <div
-      class="canvas-container border-black border-2 rounded-xl bg-white overflow-auto relative"
+      class="canvas-container border-black border-2 rounded-xl bg-white overflow-auto relative custom-scrollbar"
       ref="viewportElement"
       @mousedown="startPan"
       @mousemove="onPan"
@@ -67,21 +67,21 @@
             <label class="flex flex-col text-sm font-medium">
               Seat Number:
               <input
-                class="mt-1 border rounded bg-gray-100 p-2 text-sm focus:ring-2 focus:ring-blue-400 outline-none"
+                class="mt-1 border rounded bg-gray-100 p-2 text-sm outline-none"
                 v-model="selectedSeat.seatNumber"
               />
             </label>
             <label class="flex flex-col text-sm font-medium">
               Description:
               <input
-                class="mt-1 border rounded bg-gray-100 p-2 text-sm focus:ring-2 focus:ring-blue-400 outline-none"
+                class="mt-1 border rounded bg-gray-100 p-2 text-sm outline-none"
                 v-model="selectedSeat.description"
               />
             </label>
           </div>
 
           <div
-            class="flex items-center mt-2 cursor-pointer group  pb-3"
+            class="flex items-center mt-2 cursor-pointer group pb-3"
             @click="selectedSeat.available = !selectedSeat.available"
           >
             <span class="mr-2 text-sm font-medium">Available:</span>
@@ -111,7 +111,7 @@
           </div>
         </div>
 
-        <div v-else class="flex-1 flex items-center justify-center text-gray-500 italic">
+        <div v-else class="flex-1 flex items-center justify-center text-gray-500">
           Select a seat to edit details
         </div>
 
@@ -726,5 +726,16 @@ label {
 
 .btn-zoom {
   @apply p-2 px-4 bg-gray-500 text-white rounded hover:bg-gray-600;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-full hover:bg-gray-400 transition-colors;
 }
 </style>

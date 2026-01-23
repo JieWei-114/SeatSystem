@@ -25,7 +25,7 @@ const server = app.listen(PORT, () => console.log(`Server running on port ${PORT
 sequelize.authenticate()
   .then(() => {
     console.log('Database connected!');
-    return sequelize.sync({ force: false }); // Sync models without dropping tables
+    return sequelize.sync({ force: false });
   })
   .then(() => console.log('Database synchronized'))
   .catch((err: Error) => console.error('Database error:', err));

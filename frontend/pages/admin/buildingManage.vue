@@ -79,7 +79,7 @@
                   v-if="editingBuildingId === building.id"
                   v-model="editedBuildingName"
                   type="text"
-                  class="p-1 border rounded w-full sm:w-auto focus:ring-2 focus:ring-blue-400 outline-none"
+                  class="p-1 border rounded w-full sm:w-auto outline-none"
                 />
                 <span class="pl-1 text-lg font-bold text-gray-800" v-else>{{ building.name }}</span>
               </div>

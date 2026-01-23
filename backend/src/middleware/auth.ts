@@ -1,11 +1,20 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-// Define the expected JWT payload shape
+// Define JWT payload
 interface UserPayload {
   id: number;
   username: string;
   role: string;
+}
+
+// Express request include user
+declare global {
+  namespace Express {
+    interface Request {
+      user?: UserPayload;
+    }
+  }
 }
 
 export const authenticateToken = (req: Request, res: Response, next: NextFunction): void => {

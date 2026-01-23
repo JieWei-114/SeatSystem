@@ -10,19 +10,6 @@ interface UserPayload {
   role: string;
 }
 
-interface SeatInput {
-  seatNumber: string;
-  description?: string;
-  available: boolean;
-  x: number;
-  y: number;
-  angle: number;
-  scaleX?: number;
-  scaleY?: number;
-  width?: number;
-  height?: number;
-}
-
 // Add Floor Plan (Super Admin only)
 export const addFloorPlan = async (req: Request, res: Response): Promise<void> => {
   const authHeader = req.headers['authorization'];
@@ -76,7 +63,7 @@ export const addFloorPlan = async (req: Request, res: Response): Promise<void> =
   }
 };
 
-// Get Floor Plan by Floor ID (Authenticated users)
+// Get Floor Plan by Floor ID (All Authenticated users)
 export const getFloorPlan = async (req: Request, res: Response): Promise<void> => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -120,7 +107,7 @@ export const updateFloorPlans = async (req: Request, res: Response): Promise<voi
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
   const { floorId } = req.params as { floorId: string | string[] };
-  const { seats } = req.body; // No image required for update
+  const { seats } = req.body;
 
   if (!token) {
     res.status(401).json({ status: 'fail', message: 'No token provided' });
@@ -165,7 +152,6 @@ export const updateFloorPlans = async (req: Request, res: Response): Promise<voi
       height: s.height ?? null,
     }));
 
-    // Cast to any to avoid cross-module SeatInput type mismatch
     const floorPlan = await updateFloorPlan(Number(floorIdStr), normalizedSeats as any);
     const hostHeader = req.get('host');
     const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader || req.hostname;

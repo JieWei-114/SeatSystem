@@ -66,13 +66,13 @@
       <div
         class="relative flex-grow border-2 border-gray-300 rounded-2xl overflow-hidden bg-slate-50 shadow-inner group"
       >
-        <div class="overflow-auto" ref="viewportElement" @wheel="onWheel">
+        <div class="overflow-auto custom-scrollbar" ref="viewportElement" @wheel="onWheel">
           <div
             :style="{
               transform: `scale(${zoomLevel})`,
               transformOrigin: '0 0',
             }"
-            class="transition-transform duration-200 ease-out overflow-auto"
+            class="transition-transform duration-200 ease-out"
           >
             <canvas ref="canvasElement" class="block"></canvas>
           </div>
@@ -138,7 +138,7 @@
 
             <div
               v-else
-              class="flex-grow flex flex-col items-center justify-center text-center p-6 text-gray-400 italic"
+              class="flex-grow flex flex-col items-center justify-center text-center p-6 text-gray-400"
             >
               <p class="text-sm">Click a seat on the map to see details</p>
             </div>
@@ -321,7 +321,6 @@ const loadFloorPlan = async () => {
           left: seatData.x,
           top: seatData.y,
           angle: seatData.angle || 0,
-          // apply saved size/scale if present so booking view reflects editor changes
           scaleX: seatData.scaleX || 1,
           scaleY: seatData.scaleY || 1,
           width: seatData.width || 15,

@@ -3,7 +3,7 @@ import { useAuthStore } from '../stores/auth';
 
 // Base API configuration
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api', // Matches nuxt.config.ts runtimeConfig
+  baseURL: 'http://localhost:5000/api', // Matches nuxt.config.ts
   headers: {
     'Content-Type': 'application/json',
   },
@@ -114,7 +114,7 @@ export const getBuildingsAndFloors = async () => {
   return response.data;
 };
 
-// Add TypeScript types for floor plan functions
+// Types for floor plan functions
 interface Seat {
   seatNumber: string;
   description?: string;
@@ -122,13 +122,6 @@ interface Seat {
   x: number;
   y: number;
   angle: number;
-}
-
-interface FloorPlan {
-  id: number;
-  floorId: number;
-  imagePath: string;
-  seats?: Seat[];
 }
 
 export const createFloorPlan = async (floorId: number, image: string, seats: Seat[]) => {
@@ -145,19 +138,6 @@ export const updateFloorPlan = async (floorId: number, seats: Seat[]) => {
   const response = await api.put(`/floorplan/${floorId}`, { seats });
   return response.data.data;
 };
-
-interface Booking {
-  id: number;
-  date: string;
-  buildingName: string;
-  floorName: string;
-  seatNumber: string;
-}
-
-interface bookingData {
-  seatId: number;
-  date: string;
-}
 
 export const bookingSeat = async (seatId: number, date: string) => {
   const response = await api.post('/booking/add', { seatId, date });

@@ -48,10 +48,9 @@ interface Booking {
   [key: string]: any; // Allow for additional fields if needed
 }
 
-// Type the bookings ref
+// bookings ref
 const bookings = ref<Booking[]>([]);
 
-// Type the fetchBookings function
 const fetchBookings = async (): Promise<void> => {
   try {
     const response: Booking[] = await getBookingHistory();

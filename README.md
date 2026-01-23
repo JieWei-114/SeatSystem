@@ -136,4 +136,13 @@ backend/public/uploads/floorplans/
 ![App screenshot](assets/screenshot2.png)
 ![App screenshot](assets/screenshot3.png)
 
+### This was mainly for practice purposes, so I wouldn’t recommend using it.
 
+````
+FaricJs is fine for a simple demos or basic drawing.
+But for complex, rule-driven editors, the code will become messy and hard to debug.
+Many examples dont match the versions, solution found online offten dont work as expected.
+
+https://fabric5.fabricjs.com/docs/index.html
+
+````
