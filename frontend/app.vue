@@ -17,8 +17,8 @@
       <main 
         class="flex-1 transition-all duration-300"
         :class="{ 
-          'md:ml-48': authStore.isAuthenticated, // 电脑端留出固定 64 的宽度
-          'pt-16 md:pt-0': authStore.isAuthenticated // 手机端留出顶部控制栏高度
+          'md:ml-48': authStore.isAuthenticated,
+          'pt-16 md:pt-0': authStore.isAuthenticated
         }"
       >
         <div class="p-4 md:p-8">

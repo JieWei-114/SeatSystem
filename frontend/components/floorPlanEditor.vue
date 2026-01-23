@@ -2,16 +2,12 @@
   <div class="bg-gray-100 min-h-screen">
     <div class="w-full mt-2 p-3 md:p-5 border rounded bg-gray-300 mb-2">
       <div class="flex border-b border-gray-400 mb-3">
-        <h1 class="font-bold text-lg md:text-xl pb-2">
-          Floor Plan Editor
-        </h1>
-        
-        <button class="btn-save sm:w-auto ml-auto m-1" @click="saveFloorPlan">
-          Save Plan
-        </button>
+        <h1 class="font-bold text-lg md:text-xl pb-2">Floor Plan Editor</h1>
+
+        <button class="btn-save sm:w-auto ml-auto m-1" @click="saveFloorPlan">Save Plan</button>
       </div>
 
-      <div class="flex flex-col gap-4">
+      <div class="flex flex-col justify-between lg:flex-row gap-2">
         <div v-if="!isViewingFloorPlan" class="w-full">
           <input
             type="file"
@@ -21,27 +17,51 @@
           />
         </div>
 
-
-          <div v-if="!isViewingFloorPlan" class="flex flex-wrap gap-2">
-            <button class="btn-primary" @click="addSeat">Add Seat</button>
-            <button class="btn-danger" :disabled="!selectedSeat" @click="deleteSeat">Delete</button>
-            <button class="btn-action" :disabled="!selectedSeat" @click="lockSeat">Lock</button>
-            <button class="btn-action" :disabled="!selectedSeat" @click="unlockSeat">Unlock</button>
-          </div>
+        <div v-if="!isViewingFloorPlan" class="flex gap-2 lg:w-full">
+          <button class="btn-primary" @click="addSeat">Add Seat</button>
+          <button class="btn-danger" :disabled="!selectedSeat" @click="deleteSeat">Delete</button>
+          <button class="btn-action" :disabled="!selectedSeat" @click="lockSeat">Lock</button>
+          <button class="btn-action" :disabled="!selectedSeat" @click="unlockSeat">Unlock</button>
+        </div>
+        <div class="flex gap-2 items-center">
+          <button class="btn-zoom" @click="zoomIn">
+            <span class="text-lg font-bold">+</span>
+          </button>
+          <span class="text-sm font-medium px-2">{{ Math.round(zoomLevel * 100) }}%</span>
+          <button class="btn-zoom" @click="zoomOut">
+            <span class="text-lg font-bold">−</span>
+          </button>
+          <button class="btn-zoom" @click="resetZoom">
+            <span class="text-xs font-bold">Reset</span>
+          </button>
+        </div>
       </div>
     </div>
 
     <div
-      class="canvas-container border-black border-2 rounded-xl bg-white overflow-hidden relative"
+      class="canvas-container border-black border-2 rounded-xl bg-white overflow-auto relative"
+      ref="viewportElement"
+      @mousedown="startPan"
+      @mousemove="onPan"
+      @mouseup="endPan"
+      @mouseleave="endPan"
+      @wheel="onWheel"
     >
-      <canvas ref="canvasElement" class="max-w-full h-auto mx-auto block"></canvas>
+      <div
+        ref="canvasWrapper"
+        class="canvas-wrapper"
+        :style="{
+          transform: `scale(${zoomLevel})`,
+          transformOrigin: 'top left',
+        }"
+      >
+        <canvas ref="canvasElement" class="block"></canvas>
+      </div>
     </div>
 
-    <div
-      class="w-full mt-2 p-3 md:p-4 border rounded bg-gray-300 relative lg:h-[180px]"
-    >
+    <div class="w-full mt-2 p-3 md:p-4 border rounded bg-gray-300 relative lg:h-[180px]">
       <div class="flex flex-col lg:flex-row justify-between gap-6">
-        <div v-if="selectedSeat" class="flex-1 border-b border-gray-400 ">
+        <div v-if="selectedSeat" class="flex-1 border-b border-gray-400">
           <h2 class="font-bold text-lg pb-1">Seat Info</h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <label class="flex flex-col text-sm font-medium">
@@ -61,7 +81,7 @@
           </div>
 
           <div
-            class="flex items-center mt-2 cursor-pointer group"
+            class="flex items-center mt-2 cursor-pointer group  pb-3"
             @click="selectedSeat.available = !selectedSeat.available"
           >
             <span class="mr-2 text-sm font-medium">Available:</span>
@@ -189,9 +209,18 @@ const props = defineProps({
 const emit = defineEmits(['floor-plan-saved']);
 
 const canvasElement = ref(null);
+const viewportElement = ref(null);
+const canvasWrapper = ref(null);
+
 const selectedSeat = ref(null);
 const seats = ref([]);
 const hasExistingFloorPlan = ref(false);
+
+const zoomLevel = ref(1);
+const isPanning = ref(false);
+const panStart = ref({ x: 0, y: 0 });
+const scrollStart = ref({ x: 0, y: 0 });
+
 let fabricCanvas = null;
 
 onMounted(() => {
@@ -366,6 +395,66 @@ const loadFloorPlan = async () => {
   } catch (err) {
     console.error("Failed to fetch floor plan:", err);
   }
+};
+
+// Zoom functions
+const zoomIn = () => {
+  if (zoomLevel.value < 3) {
+    zoomLevel.value = Math.min(3, zoomLevel.value + 0.1);
+  }
+};
+
+const zoomOut = () => {
+  if (zoomLevel.value > 0.3) {
+    zoomLevel.value = Math.max(0.3, zoomLevel.value - 0.1);
+  }
+};
+
+const resetZoom = () => {
+  zoomLevel.value = 1;
+  if (viewportElement.value) {
+    viewportElement.value.scrollTop = 0;
+    viewportElement.value.scrollLeft = 0;
+  }
+};
+
+const onWheel = (e) => {
+  if (e.ctrlKey || e.metaKey) {
+    e.preventDefault();
+    if (e.deltaY < 0) {
+      zoomIn();
+    } else {
+      zoomOut();
+    }
+  }
+};
+
+// Pan functions
+const startPan = (e) => {
+  const allowPan = e.button === 1 || e.button === 2 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey;
+  if (allowPan) {
+    isPanning.value = true;
+    panStart.value = { x: e.clientX, y: e.clientY };
+    scrollStart.value = {
+      x: viewportElement.value.scrollLeft,
+      y: viewportElement.value.scrollTop
+    };
+    e.preventDefault();
+  }
+};
+
+const onPan = (e) => {
+  if (isPanning.value && viewportElement.value) {
+    const deltaX = panStart.value.x - e.clientX;
+    const deltaY = panStart.value.y - e.clientY;
+    viewportElement.value.scrollLeft = scrollStart.value.x + deltaX;
+    viewportElement.value.scrollTop = scrollStart.value.y + deltaY;
+    e.preventDefault();
+  }
+};
+
+const endPan = () => {
+  isPanning.value = false;
 };
 
 const addSeat = () => {
@@ -607,6 +696,10 @@ const saveFloorPlan = async () => {
   height: 500px;
 }
 
+.canvas-wrapper {
+  transition: transform 0.2s ease;
+}
+
 label {
   display: block;
   margin: 10px 0;
@@ -629,5 +722,9 @@ label {
   @apply aspect-square flex items-center justify-center bg-gray-600 text-white rounded-md 
          hover:bg-gray-700 active:scale-95 transition-all 
          disabled:bg-gray-400 disabled:cursor-not-allowed text-lg shadow-sm;
+}
+
+.btn-zoom {
+  @apply p-2 px-4 bg-gray-500 text-white rounded hover:bg-gray-600;
 }
 </style>

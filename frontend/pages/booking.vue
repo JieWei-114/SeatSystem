@@ -62,53 +62,95 @@
         </div>
       </div>
     </div>
-    <div class="canvas-container border-black border-2 rounded-xl">
-      <canvas ref="canvasElement" v-show="canvasVisible"></canvas>
-      <div v-if="selectedSeat" class="seat-info">
-        <p>Seat: {{ selectedSeat.seatNumber }}</p>
-        <p>Description: {{ selectedSeat.description }}</p>
-        <p>Available: {{ selectedSeat.available ? 'Yes' : 'No' }}</p>
+    <div class="flex flex-col lg:flex-row gap-3 min-h-[600px]">
+      <div
+        class="relative flex-grow border-2 border-gray-300 rounded-2xl overflow-hidden bg-slate-50 shadow-inner group"
+      >
+        <div class="overflow-auto" ref="viewportElement" @wheel="onWheel">
+          <div
+            :style="{
+              transform: `scale(${zoomLevel})`,
+              transformOrigin: '0 0',
+            }"
+            class="transition-transform duration-200 ease-out overflow-auto"
+          >
+            <canvas ref="canvasElement" class="block"></canvas>
+          </div>
+        </div>
+
+        <div
+          v-if="canvasVisible"
+          class="absolute bottom-4 left-4 flex items-center bg-white/90 backdrop-blur shadow-lg rounded-xl border border-gray-200 p-1 z-10"
+        >
+          <button @click="zoomOut">−</button>
+          <div class="px-3 text-center min-w-[60px]">
+            <span class="text-sm font-mono font-bold text-gray-700"
+              >{{ Math.round(zoomLevel * 100) }}%</span
+            >
+          </div>
+          <button @click="zoomIn">+</button>
+          <div class="w-[1px] h-6 bg-gray-200 mx-1"></div>
+          <button
+            class="px-3 py-2 text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors uppercase"
+            @click="resetZoom"
+          >
+            Reset
+          </button>
+        </div>
       </div>
-      <!-- Zoom Buttons
-      <div v-if="canvasVisible" class="zoom-controls">
-        <button
-          @click="zoomCanvas(0.1)"
-          class="p-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+
+      <div class="w-full lg:w-48 flex flex-col gap-4 shrink-0">
+        <div
+          class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex-grow"
         >
-          +
-        </button>
-        <button
-          @click="zoomCanvas(-0.1)"
-          class="p-2 bg-gray-500 text-white rounded hover:bg-gray-600 ml-2"
-        >
-          -
-        </button>
-      </div> -->
-      <!-- <div v-if="hoveredSeat" class="seat-info">
-        <p>Seat: {{ hoveredSeat.seatNumber }}</p>
-        <p>Description: {{ hoveredSeat.description }}</p>
-        <p>Available: {{ hoveredSeat.available ? 'Yes' : 'No' }}</p>
-      </div> -->
+          <div class="bg-gray-800 p-4">
+            <h3 class="text-white font-bold text-sm uppercase tracking-wider">Selection Info</h3>
+          </div>
+
+          <div class="p-4 flex flex-col h-full">
+            <div v-if="selectedSeat" class="space-y-4 fade-in duration-300">
+              <div>
+                <label>Seat Number</label>
+                <p class="text-2xl font-black text-gray-800">{{ selectedSeat.seatNumber }}</p>
+              </div>
+              <div>
+                <label>Description</label>
+                <p class="text-sm text-gray-600 leading-relaxed">
+                  {{ selectedSeat.description || 'No description provided.' }}
+                </p>
+              </div>
+              <div>
+                <label>Status</label>
+                <div class="flex items-center mt-1">
+                  <span
+                    :class="selectedSeat.available ? 'bg-green-500' : 'bg-red-500'"
+                    class="w-3 h-3 rounded-full mr-2"
+                  ></span>
+                  <span
+                    class="font-bold"
+                    :class="selectedSeat.available ? 'text-green-700' : 'text-red-700'"
+                  >
+                    {{ selectedSeat.available ? 'Ready to Book' : 'Occupied' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div
+              v-else
+              class="flex-grow flex flex-col items-center justify-center text-center p-6 text-gray-400 italic"
+            >
+              <p class="text-sm">Click a seat on the map to see details</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <!-- <div class="mt-4">
-      <h2 class="text-xl font-bold mb-2">Booking History</h2>
-      <ul v-if="bookingHistory.length > 0" class="border rounded p-2">
-        <li
-          v-for="booking in bookingHistory"
-          :key="booking.id"
-          class="p-2 border-b"
-        >
-          {{ booking.date }} - {{ booking.buildingName }} - Floor
-          {{ booking.floorName }} - Seat {{ booking.seatNumber }}
-        </li>
-      </ul>
-      <p v-else>No bookings yet.</p>
-    </div> -->
   </div>
 </template>
 
 <script setup lang="js">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '~/stores/auth';
 import { getBuildingsAndFloors, getFloorPlan, bookingSeat, getBookingHistory  } from '~/services/api';
@@ -120,11 +162,13 @@ const selectedBuildingId = ref('');
 const selectedFloorId = ref('');
 const floorDescription = ref('');
 const canvasVisible = ref(false);
-// const hoveredSeat = ref(null);
 const canvasElement = ref(null);
 const selectedDate = ref('');
 const selectedSeat = ref(null);
 const bookingHistory = ref([]);
+const zoomLevel = ref(1);
+const viewportElement = ref(null);
+
 let fabricCanvas = null; // Use let for reassignment
 
 const authStore = useAuthStore();
@@ -154,16 +198,6 @@ watch([selectedDate], () => {
   }
 });
 
-// const zoomCanvas = (delta) => {
-//   if (!fabricCanvas) return;
-//   let zoom = fabricCanvas.getZoom();
-//   zoom += delta;
-//   if (zoom > 2) zoom = 2; // Max zoom in
-//   if (zoom < 1) zoom = 1; // Max zoom out
-//   fabricCanvas.setZoom(zoom);
-//   fabricCanvas.renderAll();
-// };
-
 const hasBookedOnDate = (date) => {
   return bookingHistory.value.some(b => b.date === date);
 };
@@ -192,6 +226,7 @@ const updateFloors = () => {
   selectedFloorId.value = '';
   floorDescription.value = '';
   canvasVisible.value = true;
+  zoomLevel.value = 1;
   if (fabricCanvas) {
     fabricCanvas.clear();
   }
@@ -258,23 +293,6 @@ const loadFloorPlan = async () => {
         backgroundImage: bgImage,
       });
 
-      // Enable zoom with mouse wheel
-      // fabricCanvas.on('mouse:wheel', (opt) => {
-      //   const delta = opt.e.deltaY;
-      //   let zoom = fabricCanvas.getZoom();
-      //   zoom *= 0.999 ** delta;
-      //   if (zoom > 2) zoom = 2; // Max zoom in
-      //   if (zoom < 1) zoom = 1; // Max zoom out
-      //   fabricCanvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
-      //   opt.e.preventDefault();
-      //   opt.e.stopPropagation();
-      // });
-      
-      // FaricJs is fine for a simple demos or basic drawing. 
-      // But for complex, rule-driven editors, the code will become messy and hard to debug. 
-      // The document is outdated and incomplete many examples dont match current versions, solution found online offten dont work as expected. 
-      // https://fabricjs.com/docs/old-docs/fabric-intro-part-5/
-
       const date = selectedDate.value || today;
       seats.forEach((seatData) => {
         const isBooked = bookingHistory.value.some(b => b.seatNumber === seatData.seatNumber && b.date === date);
@@ -325,22 +343,6 @@ const loadFloorPlan = async () => {
         console.log('Seat added:', seatData);
       });
 
-    //   fabricCanvas.on('mouse:over', (e) => {
-    //   if (e.target && e.target.seatData) {
-    //     selectedSeat.value = e.target.seatData;
-    //     fabricCanvas.renderAll();
-    //     console.log('Hover over:', e.target.seatData);
-    //   }
-    // });
-
-    // fabricCanvas.on('mouse:out', (e) => {
-    //   if (e.target && e.target.seatData) {
-    //     fabricCanvas.renderAll();
-    //     selectedSeat.value = null;
-    //     console.log('Hover out');
-    //   }
-    // });
-
     fabricCanvas.on('selection:created', (e) => {
     if (e.selected?.[0]?.seatData) {
       selectedSeat.value = e.selected[0].seatData;
@@ -388,6 +390,39 @@ const loadFloorPlan = async () => {
     canvasVisible.value = false;
   }
 };
+
+// Zoom functions
+const zoomIn = () => {
+  if (zoomLevel.value < 3) {
+    zoomLevel.value = Math.min(3, zoomLevel.value + 0.1);
+  }
+};
+
+const zoomOut = () => {
+  if (zoomLevel.value > 0.3) {
+    zoomLevel.value = Math.max(0.3, zoomLevel.value - 0.1);
+  }
+};
+
+const resetZoom = () => {
+  zoomLevel.value = 1;
+  if (viewportElement.value) {
+    viewportElement.value.scrollTop = 0;
+    viewportElement.value.scrollLeft = 0;
+  }
+};
+
+  const onWheel = (e) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      if (e.deltaY < 0) {
+        zoomIn();
+      } else {
+        zoomOut();
+      }
+    }
+  };
+
 const bookSelectedSeat = async () => {
   if (hasBookedOnDate(selectedDate.value)) {
     alert('You already booked a seat for this date.');
@@ -434,24 +469,14 @@ const bookSelectedSeat = async () => {
 </script>
 
 <style scoped>
-.canvas-container {
-  position: relative;
-  width: 100%;
-  height: 500px;
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
-
-.seat-info {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-transparent;
 }
-/* .zoom-controls {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-} */
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-full hover:bg-gray-400 transition-colors;
+}
 </style>
