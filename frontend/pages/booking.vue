@@ -62,11 +62,11 @@
         </div>
       </div>
     </div>
-    <div class="flex flex-col lg:flex-row gap-3 min-h-[600px]">
+    <div class="flex flex-col gap-3 min-h-[600px]">
       <div
         class="relative flex-grow border-2 border-gray-300 rounded-2xl overflow-hidden bg-slate-50 shadow-inner group"
       >
-        <div class="overflow-auto custom-scrollbar" ref="viewportElement" @wheel="onWheel">
+        <div class="w-[100%] overflow-auto custom-scrollbar" ref="viewportElement" @wheel="onWheel">
           <div
             :style="{
               transform: `scale(${zoomLevel})`,
@@ -99,7 +99,7 @@
         </div>
       </div>
 
-      <div class="w-full lg:w-48 flex flex-col gap-4 shrink-0">
+      <div class="w-[100%] flex flex-col gap-4 shrink-0">
         <div
           class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex-grow"
         >

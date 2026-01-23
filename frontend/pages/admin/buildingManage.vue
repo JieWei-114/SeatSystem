@@ -172,7 +172,7 @@
         class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50"
       >
         <div
-          class="bg-white p-4 ml-0 mt-20 rounded-lg w-[70%] max-h-[90%] overflow-y-auto md:ml-64 md:mt-0"
+          class="bg-white p-4 ml-0 mt-20 rounded-lg w-[100%] max-h-[90%] overflow-y-auto md:ml-64 md:mt-0"
         >
           <floor-plan-editor
             :floor-id="selectedFloorId"
