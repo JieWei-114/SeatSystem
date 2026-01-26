@@ -1,5 +1,5 @@
 <template>
-  <div class="p-10">
+  <div class="p-0 md:p-10">
     <h2 class="text-2xl font-bold mb-4">Booking History</h2>
     <table class="w-full">
       <thead class="">

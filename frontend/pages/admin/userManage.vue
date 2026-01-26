@@ -1,5 +1,5 @@
 <template>
-  <div class="p-10">
+  <div class="p-0 md:p-10">
     <h1 class="text-2xl font-bold mb-4">Manage Users</h1>
     <div class="mb-4 flex space-x-2">
       <input
