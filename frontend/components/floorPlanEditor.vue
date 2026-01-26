@@ -13,12 +13,12 @@
             type="file"
             accept="image/*"
             @change="uploadFloorPlan"
-            class="text-sm w-full file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-gray-500 file:text-white hover:file:bg-gray-600"
+            class="text-sm file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-gray-500 file:text-white hover:file:bg-gray-600"
           />
         </div>
 
         <div v-if="!isViewingFloorPlan" class="flex gap-2 lg:w-full">
-          <button class="btn-primary" @click="addSeat">Add Seat</button>
+          <button class="btn-primary" @click="addSeat">Add</button>
           <button class="btn-danger" :disabled="!selectedSeat" @click="deleteSeat">Delete</button>
           <button class="btn-action" :disabled="!selectedSeat" @click="lockSeat">Lock</button>
           <button class="btn-action" :disabled="!selectedSeat" @click="unlockSeat">Unlock</button>
@@ -31,8 +31,8 @@
           <button class="btn-zoom" @click="zoomOut">
             <span class="text-lg font-bold">−</span>
           </button>
-          <button class="btn-zoom" @click="resetZoom">
-            <span class="text-xs font-bold">Reset</span>
+          <button class="btn-reset" @click="resetZoom">
+            <span class="text-lg">Reset</span>
           </button>
         </div>
       </div>
@@ -706,16 +706,16 @@ label {
 }
 
 .btn-primary {
-  @apply p-2 px-4 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors text-sm font-medium;
+  @apply py-1 px-2 my-1 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors text-sm font-medium;
 }
 .btn-danger {
-  @apply p-2 px-4 bg-red-500 text-white rounded hover:bg-red-600 disabled:bg-red-300 text-sm font-medium;
+  @apply py-1 px-2 my-1 bg-red-500 text-white rounded hover:bg-red-600 disabled:bg-red-300 text-sm font-medium;
 }
 .btn-action {
-  @apply p-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-blue-300 text-sm font-medium;
+  @apply py-1 px-2 my-1 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-blue-300 text-sm font-medium;
 }
 .btn-save {
-  @apply p-2 px-4 bg-green-600 text-white rounded hover:bg-green-700 text-sm font-medium;
+  @apply py-1 px-4 my-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm font-medium;
 }
 
 .dpad-btn {
@@ -725,7 +725,11 @@ label {
 }
 
 .btn-zoom {
-  @apply p-2 px-4 bg-gray-500 text-white rounded hover:bg-gray-600;
+  @apply px-4 bg-gray-500 text-white rounded hover:bg-gray-600;
+}
+
+.btn-reset {
+  @apply px-4 bg-gray-500 text-white rounded hover:bg-gray-600;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
