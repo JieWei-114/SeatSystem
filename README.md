@@ -158,6 +158,42 @@ Protected routes automatically redirect unauthenticated users to the login page.
 - Floor plan images are stored in: backend/public/uploads/floorplans/
 - Seat positions are stored as JSON coordinates in the database
 
+## Project Structure
+````
+BleakFuture/
+├── backend/                   # Backend application
+│   ├── src/
+│   │   ├── index.ts           # Application entry point
+│   │   ├── config/            # Configuration files
+│   │   ├── controllers/       # Route controllers
+│   │   ├── db/		           # Database
+│   │   │   ├── dao/           # Data Access Objects
+│   │   │   ├── entities/      # Entity definitions
+│   │   │   ├── migrations/    # Database migrations
+│   │   │   └── models/        # Sequelize models
+│   │   ├── middleware/        # Express middleware
+│   │   │   └── auth.ts        # Authentication middleware
+│   │   └── routes/            # API routes
+│   ├── public/
+│   │   └── uploads/
+│   │       └── floorplans/    # Uploaded floor plan images
+│   └── package.json
+│
+├── frontend/                  # Frontend application
+│   ├── components/            # Vue components
+│   ├── middleware/		       # middleware
+│   ├── pages/                 # Application pages
+│   │   └── admin/             # Admin pages
+│   ├── services/		       # API service layer
+│   ├── stores/                # Pinia stores
+│   ├── assets/		           # Assets
+│   │   └── css/		       # Global Tailwind CSS
+│   ├── nuxt.config.ts         # Nuxt configuration
+│   └── package.json
+│
+└── README.md                  # This file
+````
+
 ## App screenshot
 
 ![App screenshot](assets/screenshot1.png)
